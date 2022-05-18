@@ -1,7 +1,7 @@
 # Frontend-and-Backend-REST-Service
 Frontend and Backend REST service with Docker
 
-<h2>Frontend and Backend</h2>
+<h2>Datatables REST Serice</h2>
 
 <p>Procedura</p>
 
