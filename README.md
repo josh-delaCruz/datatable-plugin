@@ -21,5 +21,5 @@ docker run --name my-mysql-server --rm -v "percorso della cartella":/var/lib/mys
 </li>
 </ol> 
 
-<p>Documentazione per usare Datatable</p>
+<p>Documentazione per usare Datatable metodo GET</p>
 [Datatable server-side](https://datatables.net/examples/server_side/).
