@@ -28,7 +28,7 @@
     
     $response = array(
         "data" => array(),
-        "recordsFiltered" => intval($totalElements), //result element
+        //"recordsFiltered" => intval($totalElements), //result element
         "recordsTotal" => intval($totalElements) //all element
     );
     
@@ -36,6 +36,7 @@
         case 'GET':
         case 'POST': 
             $response["data"] = get($start, $length);
+            $response["recordsFiltered"] = intval(filteredCount());
             echo json_encode($response, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
             break;
 

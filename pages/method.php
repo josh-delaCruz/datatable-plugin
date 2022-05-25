@@ -1,56 +1,83 @@
 <?php
 
     //get all employee data
-    function get($start, $lenght){
+    function get($start, $length){
+        require("database.php");
 
         $numCampo = $_POST["order"][0]["column"];
         $campo = $_POST["columns"][$numCampo]["data"];
         $direzione = $_POST["order"][0]["dir"];
 
         $searchVal = $_POST["search"]["value"];
+        
+        $stmt = $mysqli->prepare("SELECT * FROM employees 
+                                    WHERE first_name LIKE ? 
+                                    OR last_name LIKE ? 
+                                    OR id = ? 
+                                    OR gender LIKE ? 
+                                    OR birth_date LIKE ? 
+                                    OR hire_date LIKE ? 
+                                    ORDER BY ".$campo." ".$direzione." LIMIT ".$start.", ".$length);
 
-        //$p = $page* $size;
-        require("database.php");
-        $query = "SELECT * FROM employees 
-        WHERE first_name LIKE '%$searchVal%'
-        OR last_name LIKE '%$searchVal%'
-        OR id LIKE '%$searchVal%'
-        OR gender LIKE '%$searchVal%'
-        OR birth_date LIKE '%$searchVal%'
-        OR hire_date LIKE '%$searchVal%'
-        ORDER BY $campo $direzione LIMIT $start, $lenght ";
+        $searchLike = "%".$searchVal."%";
+
+        $stmt->bind_param("ssisss", 
+                            $searchLike, 
+                            $searchLike, 
+                            $searchVal, 
+                            $searchLike,
+                            $searchLike,
+                            $searchLike);
+
+        $stmt -> execute();
 
         $json = array();
-        if($result = $mysqli-> query($query)){
-            while($row = $result-> fetch_assoc()){
-                $json[] = $row;
-            }
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $json[] = $row;
         }
+
         return $json;
     }
 
-    //add new employee
-    function post($first_name, $last_name, $gender){
+    function filteredCount(){
         require("database.php");
-        $query = "INSERT INTO employees (first_name, last_name, gender) VALUES ('$first_name','$last_name', '$gender')";
-        $result = $mysqli-> query($query);
 
-    }
+        $numCampo = $_POST["order"][0]["column"];
+        $campo = $_POST["columns"][$numCampo]["data"];
+        $direzione = $_POST["order"][0]["dir"];
 
-    //update an employee data
-    function put($first_name, $last_name, $gender, $id){
-        require("database.php");
-        $query = "UPDATE employees SET first_name = '$first_name', last_name = '$last_name', gender = '$gender' WHERE id = '$id'";
-        $result = $mysqli-> query($query);
+        $searchVal = $_POST["search"]["value"];
         
-    }
+        $stmt = $mysqli->prepare("SELECT count(*) AS num FROM employees 
+                                    WHERE first_name LIKE ? 
+                                    OR last_name LIKE ? 
+                                    OR id = ? 
+                                    OR gender LIKE ? 
+                                    OR birth_date LIKE ? 
+                                    OR hire_date LIKE ? 
+                                    ORDER BY ".$campo." ".$direzione);
 
-    //delete employee
-    function delete($id){
-        require("database.php");
-        $query = "DELETE FROM employees WHERE id = $id";
-        $result = $mysqli-> query($query);
-        
+        $searchLike = "%".$searchVal."%";
+
+        $stmt->bind_param("ssisss", 
+                            $searchLike, 
+                            $searchLike, 
+                            $searchVal, 
+                            $searchLike,
+                            $searchLike,
+                            $searchLike);
+
+        $stmt -> execute();
+
+        $num = 0;
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $num = $row["num"];
+            break;
+        }
+
+        return $num;
     }
 
 ?>
